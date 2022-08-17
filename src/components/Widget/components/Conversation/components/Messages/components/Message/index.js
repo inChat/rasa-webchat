@@ -31,8 +31,6 @@ class Message extends PureComponent {
       style = { color: userTextColor, backgroundColor: userBackgroundColor };
     }
 
-    console.log("message", text);
-
     return (
       <div
         className={sender === 'response' && customCss && customCss.style === 'class' ?
