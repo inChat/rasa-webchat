@@ -31,6 +31,8 @@ class Message extends PureComponent {
       style = { color: userTextColor, backgroundColor: userBackgroundColor };
     }
 
+    console.log("message", text);
+
     return (
       <div
         className={sender === 'response' && customCss && customCss.style === 'class' ?
@@ -40,11 +42,12 @@ class Message extends PureComponent {
       >
         <div
           className="rw-message-text"
+          title={text}
         >
           {sender === 'response' ? (
             <ReactMarkdown
               className={'rw-markdown'}
-              source={text}
+              children={text}
               linkTarget={(url) => {
                 if (!url.startsWith('mailto') && !url.startsWith('javascript')) return '_blank';
                 return undefined;
@@ -53,7 +56,7 @@ class Message extends PureComponent {
               renderers={{
                 link: props =>
                   docViewer ? (
-                    <DocViewer src={props.href}>{props.children}</DocViewer>
+                    <DocViewer src={props.href}></DocViewer>
                   ) : (
                     <a href={props.href} target={linkTarget || '_blank'} rel="noopener noreferrer" onMouseUp={e => e.stopPropagation()}>{props.children}</a>
                   )
