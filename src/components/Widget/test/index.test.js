@@ -24,7 +24,7 @@ describe('<Widget />', () => {
       profileAvatar={profile}
       dispatch={dispatch}
       customMessageDelay={() => {}}
-      tooltipSent
+      tooltipSent={{}}
       tooltipDelay={0}
       socket={{
         isInitialized: () => true
