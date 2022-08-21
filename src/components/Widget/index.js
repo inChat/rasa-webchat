@@ -34,6 +34,7 @@ import {
   setCustomCss
 } from 'actions';
 import { safeQuerySelectorAll } from 'utils/dom';
+import { uuidv4 } from 'utils/handy';
 import { SESSION_NAME, NEXT_MESSAGE } from 'constants';
 import { isVideo, isImage, isButtons, isText, isCarousel } from './msgProcessor';
 import WidgetLayout from './layout';
@@ -111,10 +112,17 @@ class Widget extends Component {
   }
 
   getSessionId() {
-    const { storage } = this.props;
+    const { storage, customData } = this.props;
+    const generateSessionId = (customData) => {
+      if (customData.deployment) {
+        const sid = customData.deployment+"-socketio-"+uuidv4();
+        console.log("generating session id", sid);
+        return sid }
+      else { return null; }
+    }
     // Get the local session, check if there is an existing session_id
     const localSession = getLocalSession(storage, SESSION_NAME);
-    const localId = localSession ? localSession.session_id : null;
+    const localId = localSession ? localSession.session_id : generateSessionId(customData);
     return localId;
   }
 
@@ -358,7 +366,8 @@ class Widget extends Component {
       initialized,
       connectOn,
       tooltipPayload,
-      tooltipDelay
+      tooltipDelay,
+      customData
     } = this.props;
     if (!socket.isInitialized()) {
       socket.createSocket();
@@ -376,7 +385,7 @@ class Widget extends Component {
       // Request a session from server
       socket.on('connect', () => {
         const localId = this.getSessionId();
-        socket.emit('session_request', { session_id: localId });
+        socket.emit('session_request', { session_id: localId, customData: customData });
       });
 
       // When session_confirm is received from the server:
