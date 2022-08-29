@@ -142,6 +142,7 @@ const ConnectedWidget = forwardRef((props, ref) => {
           badge={props.badge}
           embedded={props.embedded}
           params={props.params}
+          uploadUrl={props.uploadUrl}
           storage={storage}
           inputTextFieldHint={props.inputTextFieldHint}
           openLauncherImage={props.openLauncherImage}
@@ -187,6 +188,7 @@ ConnectedWidget.propTypes = {
   embedded: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   params: PropTypes.object,
+  uploadUrl: PropTypes.string,
   openLauncherImage: PropTypes.string,
   closeImage: PropTypes.string,
   docViewer: PropTypes.bool,
@@ -231,6 +233,7 @@ ConnectedWidget.defaultProps = {
   params: {
     storage: 'local'
   },
+  uploadUrl: null,
   docViewer: false,
   showCloseButton: true,
   showFullScreenButton: false,

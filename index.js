@@ -121,6 +121,7 @@ export const rasaWebchatProTypes = {
   embedded: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   params: PropTypes.object,
+  uploadUrl: PropTypes.string,
   openLauncherImage: PropTypes.string,
   closeImage: PropTypes.string,
   docViewer: PropTypes.bool,
@@ -184,6 +185,7 @@ export const rasaWebchatProDefaultTypes = {
   params: {
     storage: 'local'
   },
+  uploadUrl: null,
   docViewer: false,
   showCloseButton: true,
   showFullScreenButton: false,

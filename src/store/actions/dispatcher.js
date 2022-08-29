@@ -25,8 +25,8 @@ export function addUserMessage(text) {
   store.dispatch(actions.addUserMessage(text));
 }
 
-export function emitUserMessage(text) {
-  store.dispatch(actions.emitUserMessage(text));
+export function emitUserMessage(text, metadata={}) {
+  store.dispatch(actions.emitUserMessage(text, metadata));
 }
 
 export function addResponseMessage(text) {

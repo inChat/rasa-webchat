@@ -29,6 +29,7 @@ const Conversation = props =>
     />
     <Sender
       sendMessage={props.sendMessage}
+      sendFiles={props.sendFiles}
       disabledInput={props.disabledInput}
       inputTextFieldHint={props.inputTextFieldHint}
     />
@@ -38,6 +39,7 @@ Conversation.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   sendMessage: PropTypes.func,
+  sendFiles: PropTypes.func,
   profileAvatar: PropTypes.string,
   toggleFullScreen: PropTypes.func,
   fullScreenMode: PropTypes.bool,

@@ -82,10 +82,11 @@ export function addUserMessage(text, nextMessageIsTooltip = false, hidden = fals
   };
 }
 
-export function emitUserMessage(text) {
+export function emitUserMessage(text, metadata = {}) {
   return {
     type: actions.EMIT_NEW_USER_MESSAGE,
-    text
+    text,
+    metadata
   };
 }
 

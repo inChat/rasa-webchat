@@ -48,6 +48,7 @@ class Widget extends Component {
     this.messageDelayTimeout = null;
     this.onGoingMessageDelay = false;
     this.sendMessage = this.sendMessage.bind(this);
+    this.sendFiles = this.sendFiles.bind(this);
     this.getSessionId = this.getSessionId.bind(this);
     this.intervalId = null;
     this.eventListenerCleaner = () => { };
@@ -589,12 +590,39 @@ class Widget extends Component {
     event.target.message.value = '';
   }
 
+  sendFiles(files, successCb, errorCb) {
+    try {
+      const formData = new FormData();
+      formData.append('deployment', this.props.customData.deployment);
+      formData.append('eventlogID', this.getSessionId());
+      for (const file of files) {
+        formData.append('files',file);
+      }
+      fetch(this.props.uploadUrl, { method: 'POST', body: formData })
+        .then((response) => response.json())
+        .then((result) => {
+          let msg = '';
+          for (const attachment of result.data){
+            msg = msg += `![File attachment](${attachment.url} "A file attachment") `;
+          }
+          this.props.dispatch(addUserMessage(msg));
+          this.props.dispatch(emitUserMessage("/send_pic", { "displayText": msg }));
+          successCb(result);
+        })
+        .catch(errorCb);
+    } catch(err) {
+      console.log("Error", err);
+      errorCb(err);
+    }
+  }
+
   render() {
     return (
       <WidgetLayout
         toggleChat={() => this.toggleConversation()}
         toggleFullScreen={() => this.toggleFullScreen()}
         onSendMessage={event => this.handleMessageSubmit(event)}
+        sendFiles={this.props.uploadUrl === null ? null : this.sendFiles}
         title={this.props.title}
         subtitle={this.props.subtitle}
         customData={this.props.customData}
@@ -651,6 +679,7 @@ Widget.propTypes = {
   socket: PropTypes.shape({}),
   embedded: PropTypes.bool,
   params: PropTypes.shape({}),
+  uploadUrl: PropTypes.string,
   connected: PropTypes.bool,
   initialized: PropTypes.bool,
   openLauncherImage: PropTypes.string,
@@ -682,6 +711,7 @@ Widget.defaultProps = {
   tooltipPayload: null,
   inputTextFieldHint: 'Type a message...',
   oldUrl: '',
+  uploadUrl: null,
   disableTooltips: false,
   defaultHighlightClassname: '',
   defaultHighlightCss: 'animation: 0.5s linear infinite alternate default-botfront-blinker-animation; outline-style: solid;',

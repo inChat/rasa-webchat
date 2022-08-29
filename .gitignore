@@ -13,3 +13,6 @@ module
 # Test files
 coverage
 *.tgz
+
+#Other
+devnotes.md

@@ -35,11 +35,12 @@ function initStore(
     if (!sessionId && socket.sessionId) {
       sessionId = socket.sessionId;
     }
-    const emitMessage = (payload) => {
+    const emitMessage = (payload, metadata={}) => {
       const emit = () => {
         socket.emit(
           'user_uttered', {
             message: payload,
+            metadata: metadata,
             customData: socket.customData,
             session_id: sessionId
           }
@@ -61,7 +62,7 @@ function initStore(
     };
     switch (action.type) {
       case actionTypes.EMIT_NEW_USER_MESSAGE: {
-        emitMessage(action.text);
+        emitMessage(action.text, action.metadata);
         break;
       }
       case actionTypes.GET_OPEN_STATE: {

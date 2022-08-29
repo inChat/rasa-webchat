@@ -64,9 +64,16 @@
       background-color: $gray-6;
     }
 
-    .#{$namespace}send-icon {
+    &.#{$namespace}media-control { margin-right: 4px; }
+
+    .#{$namespace}media-icon,.#{$namespace}send-icon {
       margin: 3px 2px 0 0;
       stroke: currentColor;
+    }
+
+    .#{$namespace}media-icon {
+      fill: currentColor;
+      stroke: unset;
     }
   }
   
