@@ -22,7 +22,7 @@ import './style.scss';
 import ThemeContext from '../../ThemeContext';
 
 import SVG from 'react-inlinesvg';
-import logo from 'assets/Hytebotti.svg';
+import defaultLauncherImage from 'assets/Opener.svg';
 
 const Launcher = ({
   toggle,
@@ -210,7 +210,7 @@ const Launcher = ({
         {openLauncherImage ? (
           <img src={openLauncherImage} class="rw-open-launcher-image" style={{ width: '24px' }} height="auto" alt="Open Chat"  />
         ) : (
-          <SVG src={logo} width={24} height="auto" alt="Open Chat" className="rw-open-launcher rw-logo" />
+          <SVG src={defaultLauncherImage} width={24} height="auto" alt="Open Chat" className="rw-open-launcher rw-logo" />
         )}
         {showTooltip && lastMessage && lastMessage.get('sender') === 'response' && (referenceElement ? renderPlacedTooltip() : renderToolTip())}
       </div>

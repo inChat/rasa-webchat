@@ -22,6 +22,23 @@
     font-size: 11px;
     color: #a4a7ab;
   }
+
+  .#{$namespace}avatar-intro-wrapper {
+    float: left;
+    margin-left: 0.6rem;
+    margin-right: 0.4rem;
+    width: 10%;
+    min-width: 3.5rem;
+    img { display: block; width: 100%; }
+  }
+
+  // First message after the avatar
+  .#{$namespace}avatar-intro-wrapper + .#{$namespace}message {
+    .#{$namespace}response {
+      border-radius: 20px 20px 20px 4px !important;
+    }
+  }
+
   // When we have several messages, the first one of the group
   .#{$namespace}message:first-child:not(:only-child) {
     .#{$namespace}response {

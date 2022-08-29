@@ -6,11 +6,12 @@
       const load = () => {
         if (!WebChat) setTimeout(load, 100);
         if (WebChat) WebChat.default({
-          title: "inChat",
+          title: "Dev Chatbot Title",
           subtitle: "",
           customData:{language:"en", deployment: "14"},
           socketUrl:"http://localhost:5008",
           withRules: true,
+          profileAvatar: "https://bots.inchat.design/static/chat-client/assets/barnaby.svg",
           uploadUrl: "http://localhost:8000/api/v1/attachments/"
         });
       }

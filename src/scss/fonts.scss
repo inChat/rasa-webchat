@@ -2,26 +2,50 @@
 
 /* definition */
 @font-face {
-  font-family: IBMPlexSans;
-  src: url('../../assets/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-Regular.ttf') format('truetype');
   font-weight: $font-weight-regular;
   font-style: normal;
 }
 @font-face {
-  font-family: IBMPlexSans;
-  src: url('../../assets/fonts/IBMPlexSans-Medium.ttf') format('truetype');
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-Medium.ttf') format('truetype');
   font-weight: $font-weight-mediumbold;
   font-style: normal;
 }
 @font-face {
-  font-family: IBMPlexSans;
-  src: url('../../assets/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-SemiBold.ttf') format('truetype');
   font-weight: $font-weight-semibold;
   font-style: normal;
 }
 @font-face {
-  font-family: IBMPlexSans;
-  src: url('../../assets/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-Bold.ttf') format('truetype');
   font-weight: $font-weight-bold;
   font-style: normal;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-RegularItalic.ttf') format('truetype');
+  font-weight: $font-weight-regular;
+  font-style: italic;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-MediumItalic.ttf') format('truetype');
+  font-weight: $font-weight-mediumbold;
+  font-style: italic;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-SemiBoldItalic.ttf') format('truetype');
+  font-weight: $font-weight-semibold;
+  font-style: italic;
+}
+@font-face {
+  font-family: Montserrat;
+  src: url('../../assets/fonts/Montserrat-BoldItalic.ttf') format('truetype');
+  font-weight: $font-weight-bold;
+  font-style: italic;
 }

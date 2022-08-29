@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 
 
-import logo from 'assets/Hytebotti.svg';
+import logo from 'assets/Avatar.svg';
 import close from 'assets/Close.svg';
 import fullscreen from 'assets/fullscreen_button.svg';
 import fullscreenExit from 'assets/fullscreen_exit_button.svg';

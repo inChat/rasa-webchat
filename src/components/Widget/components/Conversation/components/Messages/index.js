@@ -8,6 +8,7 @@ import { Video, Image, Message, Carousel, Buttons } from 'messagesComponents';
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
+import defaultAvatar from 'assets/Avatar.svg';
 
 const isToday = (date) => {
   const today = new Date();
@@ -111,6 +112,17 @@ class Messages extends Component {
         </div>
       );
 
+      const introAvatar = (<div className="rw-avatar-intro-wrapper" key='avatar-intro'>
+        {
+          profileAvatar ? (
+            <img src={profileAvatar} className="rw-avatar-intro" alt="chat avatar"  />
+          ) : (
+            <SVG src={defaultAvatar} className="rw-avatar-intro" alt="chat avatar" />
+          )
+        }
+        </div>);
+
+      let avatarShown = false;
       messages.forEach((msg, index) => {
         if (msg.get('hidden')) return;
         if (group === null || group.from !== msg.get('sender')) {
@@ -122,6 +134,10 @@ class Messages extends Component {
           };
         }
 
+        if (!avatarShown && group.from === "response"){
+          avatarShown = true;
+          group.messages.push(introAvatar);
+        }
         group.messages.push(renderMessage(msg, index));
       });
 
