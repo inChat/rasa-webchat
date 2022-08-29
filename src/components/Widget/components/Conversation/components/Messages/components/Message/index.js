@@ -61,7 +61,15 @@ class Message extends PureComponent {
               }}
             />
           ) : (
-            text
+            <ReactMarkdown
+              className={'rw-markdown'}
+              children={text}
+              linkTarget={(url) => {
+                if (!url.startsWith('mailto') && !url.startsWith('javascript')) return '_blank';
+                return undefined;
+              }}
+              transformLinkUri={null}
+            />
           )}
         </div>
       </div>
