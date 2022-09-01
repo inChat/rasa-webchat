@@ -141,7 +141,6 @@ class Widget extends Component {
   }
 
   getSessionId() {
-    return '14-socketio-9f0870a0fb824550bca8916f5f87d9c3';
     const { storage, customData } = this.props;
     const generateSessionId = (customData) => {
       if (customData.deployment) {
