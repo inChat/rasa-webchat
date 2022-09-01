@@ -39,6 +39,7 @@ import { SESSION_NAME, NEXT_MESSAGE } from 'constants';
 import { isVideo, isImage, isButtons, isText, isCarousel } from './msgProcessor';
 import WidgetLayout from './layout';
 import { storeLocalSession, getLocalSession } from '../../store/reducers/helper';
+import { fetchTracker, extractMessageEvents } from './tracker';
 
 class Widget extends Component {
   constructor(props) {
@@ -86,8 +87,35 @@ class Widget extends Component {
     }
   }
 
+  restoreHistory(){
+    const { rasaHost, rasaToken } = this.props;
+    if (rasaHost === null) { console.log("rasaHost is not set, skipping history restore"); }
+    try {
+      fetchTracker({}, rasaHost, this.getSessionId(), rasaToken).then((tracker) => {
+        const events = extractMessageEvents(tracker);
+        const hiddenCommands = ["/start"];
+        events.forEach((event) => {
+          if (event.source === 'user' && event.message.text) {
+            const isHiddenMsg = hiddenCommands.some((cmd) => event.message.text.startsWith(cmd));
+            this.props.dispatch(addUserMessage(event.message.text, false, isHiddenMsg));
+          } else if (event.source === 'bot') {
+            this.dispatchMessage(event.message)
+          } else {
+            console.log("Potentially unrenderable event: ", event);
+          }
+        });
+      })
+    } catch (err) {
+      console.error("Could not restore history", err);
+    }
+  }
+
   componentDidUpdate() {
-    const { isChatOpen, dispatch, embedded, initialized } = this.props;
+    const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData } = this.props;
+
+    if (messages.size == 0) {
+      this.restoreHistory();
+    }
 
     if (isChatOpen) {
       if (!initialized) {
@@ -113,6 +141,7 @@ class Widget extends Component {
   }
 
   getSessionId() {
+    return '14-socketio-9f0870a0fb824550bca8916f5f87d9c3';
     const { storage, customData } = this.props;
     const generateSessionId = (customData) => {
       if (customData.deployment) {
@@ -418,7 +447,6 @@ class Widget extends Component {
           // If this is an existing session, it's possible we changed pages and want to send a
           // user message when we land.
           const nextMessage = window.localStorage.getItem(NEXT_MESSAGE);
-
           if (nextMessage !== null) {
             const { message, expiry } = JSON.parse(nextMessage);
             window.localStorage.removeItem(NEXT_MESSAGE);
@@ -428,7 +456,9 @@ class Widget extends Component {
               dispatch(emitUserMessage(message));
             }
           }
-        } if (connectOn === 'mount' && tooltipPayload) {
+        }
+
+        if (connectOn === 'mount' && tooltipPayload) {
           this.tooltipTimeout = setTimeout(() => {
             this.trySendTooltipPayload();
           }, parseInt(tooltipDelay, 10));
@@ -611,7 +641,7 @@ class Widget extends Component {
         })
         .catch(errorCb);
     } catch(err) {
-      console.log("Error", err);
+      console.error("Error", err);
       errorCb(err);
     }
   }
@@ -680,6 +710,8 @@ Widget.propTypes = {
   embedded: PropTypes.bool,
   params: PropTypes.shape({}),
   uploadUrl: PropTypes.string,
+  rasaHost: PropTypes.string,
+  rasaToken: PropTypes.string,
   connected: PropTypes.bool,
   initialized: PropTypes.bool,
   openLauncherImage: PropTypes.string,
@@ -712,6 +744,8 @@ Widget.defaultProps = {
   inputTextFieldHint: 'Type a message...',
   oldUrl: '',
   uploadUrl: null,
+  rasaHost: null,
+  rasaToken: 'mydevelopmentsecret',
   disableTooltips: false,
   defaultHighlightClassname: '',
   defaultHighlightCss: 'animation: 0.5s linear infinite alternate default-botfront-blinker-animation; outline-style: solid;',

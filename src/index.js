@@ -143,6 +143,8 @@ const ConnectedWidget = forwardRef((props, ref) => {
           embedded={props.embedded}
           params={props.params}
           uploadUrl={props.uploadUrl}
+          rasaHost={props.rasaHost}
+          rasaToken={props.rasaToken}
           storage={storage}
           inputTextFieldHint={props.inputTextFieldHint}
           openLauncherImage={props.openLauncherImage}
@@ -189,6 +191,8 @@ ConnectedWidget.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   params: PropTypes.object,
   uploadUrl: PropTypes.string,
+  rasaHost: PropTypes.string,
+  rasaToken: PropTypes.string,
   openLauncherImage: PropTypes.string,
   closeImage: PropTypes.string,
   docViewer: PropTypes.bool,
@@ -234,6 +238,8 @@ ConnectedWidget.defaultProps = {
     storage: 'local'
   },
   uploadUrl: null,
+  rasaHost: null,
+  rasaToken: 'mydevelopmentsecret',
   docViewer: false,
   showCloseButton: true,
   showFullScreenButton: false,
