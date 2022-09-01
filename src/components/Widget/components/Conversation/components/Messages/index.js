@@ -9,6 +9,7 @@ import { Video, Image, Message, Carousel, Buttons } from 'messagesComponents';
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
 import defaultAvatar from 'assets/Avatar.svg';
+import SVG from 'react-inlinesvg';
 
 const isToday = (date) => {
   const today = new Date();
