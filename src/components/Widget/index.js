@@ -565,6 +565,7 @@ class Widget extends Component {
   }
 
   toggleFullScreen() {
+    console.log("Toggling fullscreen")
     this.props.dispatch(toggleFullScreen());
   }
 
@@ -681,9 +682,9 @@ class Widget extends Component {
 const mapStateToProps = state => ({
   initialized: state.behavior.get('initialized'),
   connected: state.behavior.get('connected'),
-  isChatOpen: state.behavior.get('isChatOpen'),
+  //isChatOpen: state.behavior.get('isChatOpen'),
   isChatVisible: state.behavior.get('isChatVisible'),
-  fullScreenMode: state.behavior.get('fullScreenMode'),
+  //fullScreenMode: state.behavior.get('fullScreenMode'),
   tooltipSent: state.metadata.get('tooltipSent'),
   oldUrl: state.behavior.get('oldUrl'),
   pageChangeCallbacks: state.behavior.get('pageChangeCallbacks'),

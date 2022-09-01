@@ -24,8 +24,6 @@ const Header = ({
   closeImage,
   profileAvatar
 }) => {
-  showCloseButton = true;
-
   const { mainColor } = useContext(ThemeContext);
   return (
     <div className="rw-header-and-loading">

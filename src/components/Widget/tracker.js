@@ -31,10 +31,12 @@ export const extractMessageEvents = (tracker) => {
       message: {}
     }
 
+    displayText = event.text;
     if (("displayText" in event.metadata) && (event.metadata["displayText"] !== "")) {
       displayText = event.metadata["displayText"];
-    } else {
-      displayText = event.text;
+    } else if (event.parse_data && event.parse_data.entities) {
+      const entity = event.parse_data.entities.find((e) => e.entity === 'btn_label');
+      if (entity) { displayText = entity.value }
     }
 
     if (event.data && event.data.buttons) {
