@@ -91,7 +91,9 @@ class Widget extends Component {
     const { rasaHost, rasaToken } = this.props;
     if (rasaHost === null) { console.log("rasaHost is not set, skipping history restore"); }
     try {
-      fetchTracker({}, rasaHost, this.getSessionId(), rasaToken).then((tracker) => {
+      const sessionId = this.getSessionId();
+      if (sessionId === undefined) { return; }
+      fetchTracker({}, rasaHost, sessionId, rasaToken).then((tracker) => {
         const events = extractMessageEvents(tracker);
         const hiddenCommands = ["/start"];
         events.forEach((event) => {

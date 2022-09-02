@@ -20,8 +20,6 @@ const WidgetLayout = (props) => {
     classes.push('rw-chat-open');
   }
 
-  console.log("fs", props.fullScreenMode, classes);
-
   return isVisible ? (
     <div className={classes.join(' ')}>
       {chatShowing && (
