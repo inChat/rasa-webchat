@@ -20,6 +20,7 @@ const Conversation = props =>
       connectingText={props.connectingText}
       closeImage={props.closeImage}
       profileAvatar={props.profileAvatar}
+      viewerMode={props.viewerMode}
     />
     <Messages
       profileAvatar={props.profileAvatar}
@@ -53,7 +54,8 @@ Conversation.propTypes = {
   connectingText: PropTypes.string,
   closeImage: PropTypes.string,
   customComponent: PropTypes.func,
-  showMessageDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func])
+  showMessageDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  viewerMode: PropTypes.bool
 };
 
 export default Conversation;

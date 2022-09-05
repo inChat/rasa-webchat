@@ -106,7 +106,7 @@ const Sender = ({ sendMessage, sendFiles, inputTextFieldHint, disabledInput, use
               </button>
             </React.Fragment> : null
           }
-          <button type="button" onClick={toggleMediaControls} className="rw-send rw-media-control" disabled={(inputValue && inputValue.length > 0)}>
+          <button type="button" onClick={toggleMediaControls} className="rw-send rw-media-control" disabled={(disabledInput) || (inputValue && inputValue.length > 0)}>
             <SVG width="24" height="24" className="rw-media-icon" src={mediaButton} />
           </button>
         </React.Fragment>

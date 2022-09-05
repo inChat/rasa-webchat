@@ -15,6 +15,7 @@ const WidgetLayout = (props) => {
     props.showCloseButton !== undefined ? props.showCloseButton : !props.embedded;
   const isVisible = props.isChatVisible && !(props.hideWhenNotConnected && !props.connected);
   const chatShowing = props.isChatOpen || props.embedded;
+  const disabledInput = (props.disabledInput || props.viewerMode);
 
   if (chatShowing && !props.embedded) {
     classes.push('rw-chat-open');
@@ -33,7 +34,7 @@ const WidgetLayout = (props) => {
           isChatOpen={props.isChatOpen}
           toggleFullScreen={props.toggleFullScreen}
           fullScreenMode={props.fullScreenMode}
-          disabledInput={props.disabledInput}
+          disabledInput={disabledInput}
           params={props.params}
           showFullScreenButton={props.showFullScreenButton}
           {...{ showCloseButton }}
@@ -43,6 +44,7 @@ const WidgetLayout = (props) => {
           customComponent={props.customComponent}
           showMessageDate={props.showMessageDate}
           inputTextFieldHint={props.inputTextFieldHint}
+          viewerMode={props.viewerMode}
         />
       )}
       {!props.embedded && (
@@ -95,7 +97,8 @@ WidgetLayout.propTypes = {
   customComponent: PropTypes.func,
   displayUnreadCount: PropTypes.bool,
   showMessageDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-  tooltipPayload: PropTypes.string
+  tooltipPayload: PropTypes.string,
+  viewerMode: PropTypes.bool
 };
 
 export default connect(mapStateToProps)(WidgetLayout);

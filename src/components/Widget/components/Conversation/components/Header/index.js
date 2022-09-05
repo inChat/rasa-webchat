@@ -22,7 +22,8 @@ const Header = ({
   connected,
   connectingText,
   closeImage,
-  profileAvatar
+  profileAvatar,
+  viewerMode
 }) => {
   const { mainColor } = useContext(ThemeContext);
   return (
@@ -63,7 +64,7 @@ const Header = ({
         {subtitle && <span className={(profileAvatar || logo) && 'rw-with-avatar'}>{subtitle}</span>}
       </div>
       {
-        !connected &&
+        (!connected && !viewerMode) &&
         <span className="rw-loading">
           {connectingText}
         </span>
@@ -82,7 +83,8 @@ Header.propTypes = {
   connected: PropTypes.bool,
   connectingText: PropTypes.string,
   closeImage: PropTypes.string,
-  profileAvatar: PropTypes.string
+  profileAvatar: PropTypes.string,
+  viewerMode: PropTypes.bool
 };
 
 export default Header;

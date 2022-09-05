@@ -34,7 +34,7 @@ import {
   setCustomCss
 } from 'actions';
 import { safeQuerySelectorAll } from 'utils/dom';
-import { uuidv4 } from 'utils/handy';
+import { uuidv4, getAllUrlParams } from 'utils/handy';
 import { SESSION_NAME, NEXT_MESSAGE } from 'constants';
 import { isVideo, isImage, isButtons, isText, isCarousel } from './msgProcessor';
 import WidgetLayout from './layout';
@@ -57,7 +57,15 @@ class Widget extends Component {
 
 
   componentDidMount() {
-    const { connectOn, autoClearCache, storage, dispatch, defaultHighlightAnimation } = this.props;
+    const { connectOn, autoClearCache, storage, dispatch, defaultHighlightAnimation, viewerMode } = this.props;
+
+    if (viewerMode){
+      console.log("Widget initialized in viewer mode");
+      dispatch(showChat());
+      dispatch(openChat());
+      this.forceUpdate();
+      return;
+    }
 
     // add the default highlight css to the document
     const styleNode = document.createElement('style');
@@ -92,7 +100,10 @@ class Widget extends Component {
     if (rasaHost === null) { console.log("rasaHost is not set, skipping history restore"); }
     try {
       const sessionId = this.getSessionId();
-      if (sessionId === undefined) { return; }
+      if (sessionId === undefined || sessionId === "") {
+        console.error("No sessionId provided to restore history");
+        return;
+      }
       fetchTracker({}, rasaHost, sessionId, rasaToken).then((tracker) => {
         const events = extractMessageEvents(tracker);
         const hiddenCommands = ["/start"];
@@ -113,7 +124,7 @@ class Widget extends Component {
   }
 
   componentDidUpdate() {
-    const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData } = this.props;
+    const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData, viewerMode } = this.props;
 
     if (messages.size == 0) {
       this.restoreHistory();
@@ -143,7 +154,12 @@ class Widget extends Component {
   }
 
   getSessionId() {
-    const { storage, customData } = this.props;
+    const { storage, customData, viewerMode } = this.props;
+    if (viewerMode) {
+      const urlParams = getAllUrlParams();
+      return urlParams.sessionUserId;
+    }
+
     const generateSessionId = (customData) => {
       if (customData.deployment) {
         const sid = customData.deployment+"-socketio-"+uuidv4();
@@ -159,6 +175,7 @@ class Widget extends Component {
 
   sendMessage(payload, text = '', when = 'always', tooltipSelector = false) {
     const { dispatch, initialized, messages } = this.props;
+
     const emit = () => {
       const send = () => {
         dispatch(emitUserMessage(payload));
@@ -614,6 +631,7 @@ class Widget extends Component {
 
   handleMessageSubmit(event) {
     event.preventDefault();
+    if (this.props.viewerMode){ console.log("In viewer mode, preventing message submit"); return; }
     const userUttered = event.target.message.value;
     if (userUttered) {
       this.props.dispatch(addUserMessage(userUttered));
@@ -623,6 +641,7 @@ class Widget extends Component {
   }
 
   sendFiles(files, successCb, errorCb) {
+    if (this.props.viewerMode){ console.log("In viewer mode, preventing file submission"); return; }
     try {
       const formData = new FormData();
       formData.append('deployment', this.props.customData.deployment);
@@ -675,6 +694,7 @@ class Widget extends Component {
         displayUnreadCount={this.props.displayUnreadCount}
         showMessageDate={this.props.showMessageDate}
         tooltipPayload={this.props.tooltipPayload}
+        viewerMode={this.props.viewerMode}
       />
     );
   }
@@ -732,7 +752,8 @@ Widget.propTypes = {
   defaultHighlightAnimation: PropTypes.string,
   defaultHighlightCss: PropTypes.string,
   defaultHighlightClassname: PropTypes.string,
-  messages: ImmutablePropTypes.listOf(ImmutablePropTypes.map)
+  messages: ImmutablePropTypes.listOf(ImmutablePropTypes.map),
+  viewerMode: PropTypes.bool
 };
 
 Widget.defaultProps = {
@@ -765,7 +786,8 @@ Widget.defaultProps = {
     100% {
       outline-color: green;
     }
-  }`
+  }`,
+  viewerMode: false
 };
 
 export default connect(mapStateToProps, null, null, { forwardRef: true })(Widget);

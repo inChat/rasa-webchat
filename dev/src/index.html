@@ -17,8 +17,16 @@
           uploadUrl: "http://localhost:8000/api/v1/attachments/",
           showFullScreenButton: true,
           fullScreenMode: false,
-          isChatOpen: false,
-          showCloseButton: true
+          showCloseButton: true,
+          isChatOpen: true,
+          hideWhenNotConnected: true,
+          //viewmode settings:
+          withRules: false,
+          showFullScreenButton: false,
+          fullScreenMode: true,
+          viewerMode: true,
+          showCloseButton: false,
+          hideWhenNotConnected: false,
         });
       }
       setTimeout(load, 200);

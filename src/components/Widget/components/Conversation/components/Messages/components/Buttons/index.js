@@ -17,13 +17,13 @@ class Buttons extends PureComponent {
     const {
       message,
       getChosenReply,
-      inputState,
+      inputDisabled,
       id
     } = this.props;
 
     const hint = message.get('hint');
     const chosenReply = getChosenReply(id);
-    if (!chosenReply && !inputState) {
+    if (!chosenReply && !inputDisabled) {
       // this.props.toggleInputDisabled();
     }
   }
@@ -31,17 +31,18 @@ class Buttons extends PureComponent {
   handleClick(reply) {
     const {
       chooseReply,
-      id
+      id,
+      inputDisabled
     } = this.props;
 
+    if (inputDisabled) { return; }
     const payload = reply.get('payload');
     const title = reply.get('title');
     chooseReply(payload, title, id);
   }
 
   renderButtons(message, buttons, persit) {
-    const { isLast, linkTarget, separateButtons
-    } = this.props;
+    const { isLast, linkTarget, separateButtons, inputDisabled } = this.props;
     const { userTextColor, userBackgroundColor } = this.context;
     const buttonStyle = {
       color: userTextColor,
@@ -73,6 +74,7 @@ class Buttons extends PureComponent {
               return (
                 // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                 <div
+                  disabled={inputDisabled}
                   key={index}
                   className={'rw-reply'}
                   onClick={(e) => { e.stopPropagation(); this.handleClick(reply); }}
@@ -115,7 +117,7 @@ Buttons.contextType = ThemeContext;
 
 const mapStateToProps = state => ({
   getChosenReply: id => state.messages.get(id).get('chosenReply'),
-  inputState: state.behavior.get('disabledInput'),
+  inputDisabled: state.behavior.get('disabledInput'),
   linkTarget: state.metadata.get('linkTarget')
 });
 
