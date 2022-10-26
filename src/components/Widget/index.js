@@ -97,16 +97,27 @@ class Widget extends Component {
 
   restoreHistory(){
     const { rasaHost, rasaToken } = this.props;
-    if (rasaHost === null) { console.log("rasaHost is not set, skipping history restore"); }
+    if (rasaHost === null) {
+      console.log("rasaHost is not set, skipping history restore");
+      return;
+    }
+
     try {
       const sessionId = this.getSessionId();
       if (sessionId === undefined || sessionId === "") {
         console.error("No sessionId provided to restore history");
         return;
       }
+
+      console.debug("Restoring history for session: ", sessionId);
       fetchTracker({}, rasaHost, sessionId, rasaToken).then((tracker) => {
+        if (this.props.messages.size > 0) {
+          console.debug("We already have messages, abort restore history");
+          return;
+        }
         const events = extractMessageEvents(tracker);
         const hiddenCommands = ["/start"];
+
         events.forEach((event) => {
           if (event.source === 'user' && event.message.text) {
             const isHiddenMsg = hiddenCommands.some((cmd) => event.message.text.startsWith(cmd));
