@@ -62,7 +62,7 @@ export const extractMessageEvents = (tracker) => {
     }
 
     // All the different events can also have customCss
-    if (event.data && event.data.customCss) {
+    if (event.data && event.data.metadata && event.data.metadata.customCss) {
       msgDetail['customCss'] = event.data.customCss
     }
 
