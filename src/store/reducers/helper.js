@@ -83,6 +83,13 @@ export function getLocalSession(storage, key) {
   if (cachedSession) {
     // Found existing session in storage
     const parsedSession = JSON.parse(cachedSession);
+    if (parsedSession.deployment_path !== window.location.pathname) {
+      // Invalidate session if deployment is different
+      console.debug("deployment path does not match, removing session");
+      // TODO maintain multiple sessions
+      storage.removeItem(SESSION_NAME);
+      return null;
+    }
     // Format conversation from array of object to immutable Map for use by messages components
     const formattedConversation = parsedSession.conversation
       ? parsedSession.conversation

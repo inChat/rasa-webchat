@@ -413,12 +413,7 @@ class Widget extends Component {
     const localSession = getLocalSession(storage, SESSION_NAME);
     if (localSession && (localSession.version !== 'PACKAGE_VERSION_TO_BE_REPLACED')) {
       storage.removeItem(SESSION_NAME);
-    }
-    if (localSession && localSession.deployment_path !== window.location.pathname) {
-      console.debug("deployment path does not match, removing session");
-      // TODO maintain multiple sessions
-      storate.removeItem(SESSION_NAME);
-    }
+    } //NB this may clash with restore history
   }
 
   initializeWidget(sendInitPayload = true) {
