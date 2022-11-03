@@ -248,7 +248,10 @@ ConnectedWidget.defaultProps = {
   displayUnreadCount: false,
   showMessageDate: false,
   customMessageDelay: (message) => {
-    if (message==='(...)'){ console.debug("pause..."); return 1500; }
+    if (message==="(...)"){
+      console.debug("pause...");
+      return 1500;
+    }
     let delay = message.length * 30;
     if (delay > 3 * 1000) delay = 3 * 1000;
     if (delay < 800) delay = 800;

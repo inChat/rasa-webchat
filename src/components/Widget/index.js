@@ -58,6 +58,7 @@ class Widget extends Component {
 
   componentDidMount() {
     const { connectOn, autoClearCache, storage, dispatch, defaultHighlightAnimation, viewerMode } = this.props;
+    console.log("Component did mount");
 
     if (viewerMode){
       console.log("Widget initialized in viewer mode");
@@ -77,7 +78,6 @@ class Widget extends Component {
       this.initializeWidget();
       return;
     }
-
 
     const localSession = getLocalSession(storage, SESSION_NAME);
     const lastUpdate = localSession ? localSession.lastUpdate : 0;
@@ -135,6 +135,7 @@ class Widget extends Component {
   }
 
   componentDidUpdate() {
+    console.log("Component did update");
     const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData, viewerMode } = this.props;
 
     if (messages.size == 0) {
