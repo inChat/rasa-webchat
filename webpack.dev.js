@@ -18,6 +18,9 @@ module.exports = {
     static: { directory: path.resolve(__dirname, '/lib') },
     devMiddleware: {
       stats: 'errors-only',
+    },
+    headers: {
+      "Access-Control-Allow-Origin": "*"
     }
   },
   resolve: {
