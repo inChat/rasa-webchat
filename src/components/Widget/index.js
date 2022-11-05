@@ -58,10 +58,9 @@ class Widget extends Component {
 
   componentDidMount() {
     const { connectOn, autoClearCache, storage, dispatch, defaultHighlightAnimation, viewerMode } = this.props;
-    console.log("Component did mount");
 
     if (viewerMode){
-      console.log("Widget initialized in viewer mode");
+      console.debug("Widget initialized in viewer mode");
       dispatch(showChat());
       dispatch(openChat());
       this.forceUpdate();
@@ -135,7 +134,6 @@ class Widget extends Component {
   }
 
   componentDidUpdate() {
-    console.log("Component did update");
     const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData, viewerMode } = this.props;
 
     if (messages.size == 0) {
@@ -219,11 +217,11 @@ class Widget extends Component {
   }
 
   handleMessageReceived(messageWithMetadata) {
-    const { dispatch, isChatOpen, disableTooltips } = this.props;
+    const { dispatch, isChatOpen, embedded, disableTooltips } = this.props;
 
     // we extract metadata so we are sure it does not interfer with type checking of the message
     const { metadata, ...message } = messageWithMetadata;
-    if (!isChatOpen) {
+    if (!isChatOpen && !embedded) {
       this.dispatchMessage(message);
       dispatch(newUnreadMessage());
       if (!disableTooltips) {
@@ -595,7 +593,6 @@ class Widget extends Component {
   }
 
   toggleFullScreen() {
-    console.log("Toggling fullscreen")
     this.props.dispatch(toggleFullScreen());
   }
 
