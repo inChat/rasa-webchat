@@ -50,6 +50,7 @@ class Widget extends Component {
     this.onGoingMessageDelay = false;
     this.sendMessage = this.sendMessage.bind(this);
     this.sendFiles = this.sendFiles.bind(this);
+    this.getStorageSessionId = this.getStorageSessionId.bind(this);
     this.getSessionId = this.getSessionId.bind(this);
     this.intervalId = null;
     this.eventListenerCleaner = () => { };
@@ -64,6 +65,7 @@ class Widget extends Component {
       dispatch(showChat());
       dispatch(openChat());
       this.forceUpdate();
+      this.restoreHistory();
       return;
     }
 
@@ -85,16 +87,17 @@ class Widget extends Component {
       if (Date.now() - lastUpdate < 30 * 60 * 1000) {
         this.initializeWidget();
       } else {
-        localStorage.removeItem(SESSION_NAME);
+        storage.removeItem(SESSION_NAME);
       }
     } else {
+      console.debug("did mount check version", autoClearCache);
       this.checkVersionBeforePull();
       dispatch(pullSession());
       if (lastUpdate) this.initializeWidget();
     }
   }
 
-  restoreHistory(){
+  restoreHistory(failCb){
     const { rasaHost, rasaToken } = this.props;
     if (rasaHost === null) {
       console.log("rasaHost is not set, skipping history restore");
@@ -130,15 +133,16 @@ class Widget extends Component {
       })
     } catch (err) {
       console.error("Could not restore history", err);
+      if (failCb) { failCb(); }
     }
   }
 
   componentDidUpdate() {
     const { isChatOpen, dispatch, embedded, initialized, messages, socket, customData, viewerMode } = this.props;
 
-    if (messages.size == 0) {
+    /*if (initialized && messages.size == 0) {
       this.restoreHistory();
-    }
+    }*/
 
     if (isChatOpen) {
       if (!initialized) {
@@ -163,24 +167,29 @@ class Widget extends Component {
     clearInterval(this.intervalId);
   }
 
+  getStorageSessionId() {
+    const { storage } = this.props;
+    // Get the local session, check if there is an existing session_id
+    const localSession = getLocalSession(storage, SESSION_NAME);
+    const localId = localSession ? localSession.session_id : null;
+    return localId;
+  }
+
   getSessionId() {
-    const { storage, customData, viewerMode } = this.props;
-    if (viewerMode) {
-      const urlParams = getAllUrlParams();
-      return urlParams.sessionUserId;
-    }
+    const { customData, viewerMode } = this.props;
+    const urlParams = getAllUrlParams();
+    //if (viewerMode) {
+    if (urlParams && urlParams.sessionUserId) { return urlParams.sessionUserId; }
 
     const generateSessionId = (customData) => {
       if (customData.deployment) {
         const sid = customData.deployment+"-socketio-"+uuidv4();
-        console.log("generating session id", sid);
+        console.log("Generating session id", sid);
         return sid }
       else { return null; }
     }
-    // Get the local session, check if there is an existing session_id
-    const localSession = getLocalSession(storage, SESSION_NAME);
-    const localId = localSession ? localSession.session_id : generateSessionId(customData);
-    return localId;
+
+    return this.getStorageSessionId() || generateSessionId(customData);
   }
 
   sendMessage(payload, text = '', when = 'always', tooltipSelector = false) {
@@ -410,9 +419,17 @@ class Widget extends Component {
   checkVersionBeforePull() {
     const { storage } = this.props;
     const localSession = getLocalSession(storage, SESSION_NAME);
-    if (localSession && (localSession.version !== 'PACKAGE_VERSION_TO_BE_REPLACED')) {
+
+    console.debug("check version before pull", localSession);
+    if (localSession && (localSession.deployment_path !== window.location.pathname)) {
+      // Invalidate session if deployment is different
+      console.debug("deployment paths mismatch, removing session", localSession.deployment_path, window.location.pathname);
+      // TODO maintain multiple sessions - we'll need a key other than 'chat_session' for each sesh
       storage.removeItem(SESSION_NAME);
-    } //NB this may clash with restore history
+    } else if (localSession && (localSession.version !== 'PACKAGE_VERSION_TO_BE_REPLACED')) {
+      storage.removeItem(SESSION_NAME);
+    }
+    //NB this may clash with restore history
   }
 
   initializeWidget(sendInitPayload = true) {
@@ -436,12 +453,14 @@ class Widget extends Component {
         this.handleBotUtterance(botUttered);
       });
 
+      console.debug("initwidget check vers");
       this.checkVersionBeforePull();
 
       dispatch(pullSession());
 
       // Request a session from server
       socket.on('connect', () => {
+        console.debug("socket.on connect - getSessionId");
         const localId = this.getSessionId();
         socket.emit('session_request', { session_id: localId, customData: customData });
       });
@@ -452,8 +471,12 @@ class Widget extends Component {
           ? sessionObject.session_id
           : sessionObject;
 
+        const hasHistory = (sessionObject && sessionObject.hasOwnProperty("already_exists"))
+          ? sessionObject.already_exists
+          : false;
+
         // eslint-disable-next-line no-console
-        console.log(`session_confirm:${socket.socket.id} session_id:${remoteId}`);
+        console.log(`session_confirm:${socket.socket.id} r_session_id:${remoteId}`, sessionObject);
         // Store the initial state to both the redux store and the storage, set connected to true
         dispatch(connectServer());
         /*
@@ -461,14 +484,17 @@ class Widget extends Component {
         If the localId is null or different from the remote_id,
         start a new session.
         */
-        const localId = this.getSessionId();
+        const localId = this.getStorageSessionId();
         if (localId !== remoteId) {
-          // storage.clear();
           // Store the received session_id to storage
-
+          console.debug("Mismatching ids, storeLocalSession", localId, remoteId);
           storeLocalSession(storage, SESSION_NAME, remoteId);
           dispatch(pullSession());
-          if (sendInitPayload) {
+          if (hasHistory) {
+            console.log("Remote has history, trying restore");
+            this.restoreHistory(this.trySendInitPayload);
+          } else if (sendInitPayload) {
+            console.log("No remote history, sending init payload");
             this.trySendInitPayload();
           }
         } else {
@@ -522,20 +548,20 @@ class Widget extends Component {
       isChatVisible,
       embedded,
       connected,
-      dispatch
+      dispatch,
+      viewerMode
     } = this.props;
 
     // Send initial payload when chat is opened or widget is shown
-    if (!initialized && connected && ((isChatOpen && isChatVisible) || embedded)) {
+    if (!viewerMode && !initialized && connected && ((isChatOpen && isChatVisible) || embedded)) {
       // Only send initial payload if the widget is connected to the server but not yet initialized
-
       const sessionId = this.getSessionId();
 
       // check that session_id is confirmed
       if (!sessionId) return;
 
+      console.debug('sending init payload', sessionId);
       // eslint-disable-next-line no-console
-      console.log('sending init payload', sessionId);
       socket.emit('user_uttered', { message: initPayload, customData, session_id: sessionId });
       dispatch(initialize());
     }
